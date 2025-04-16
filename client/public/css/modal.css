@@ -1,0 +1,88 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-container {
+    background-image: url("https://static.vecteezy.com/system/resources/thumbnails/008/823/124/small_2x/business-candle-stick-graph-chart-of-stock-market-investment-trading-on-blue-background-bullish-point-up-trend-of-graph-economy-design-vector.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; padding: 20px;
+    width: 320px;
+    border: 1px solid #06c900;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.modal-header span {
+    font-size: 16px;
+}
+
+.close-btn {
+    cursor: pointer;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    margin-right: 1em;
+    gap: 10px;
+}
+
+.input-section label {
+    font-weight: 600;
+    color: #333;
+}
+
+.input-field {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-footer button {
+    padding: 1em;
+    height: 1em;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: #f12a2a;
+    color: #ffffff;
+    border: none;
+}
+
+.proceed-btn {
+    background-color: #0382d1;
+    color: #fff;
+    border: none;
+}
