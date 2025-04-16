@@ -1,0 +1,48 @@
+.currency-holding-list {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 600px;
+    margin-top: 1rem;
+    color: white;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.currency-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.currency-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.currency-item {
+    display: flex;
+    justify-content: space-between;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.currency-item .currency-name {
+    font-weight: bold;
+}
+
+.currency-item .currency-amount {
+    color: #00ff00;
+}
+
+.currency-item .currency-value {
+    color: #ff9900;
+}

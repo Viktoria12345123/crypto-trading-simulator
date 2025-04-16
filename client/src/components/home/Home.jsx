@@ -1,11 +1,19 @@
 import React, { useState } from "react";
-import SellModal from "./SellModal";
-import CryptoValue from "./CryptoValue.jsx";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Sell from "./modal/Sell.jsx";
+import CurrencyItem from "./CurrencyItem.jsx";
+import CurrencyHolding from "./CurrencyHolding.jsx";
+import CurrencyList from "./CurrencyList.jsx";
 
 export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [cryptoAmount, setCryptoAmount] = useState("");
+
+    const currencies = [
+        { name: "Bitcoin", code: "BTC" },
+        { name: "Ethereum", code: "ETH" },
+        { name: "Litecoin", code: "LTC" }
+    ];
+
 
     const handleSellClick = () => {
         setIsModalOpen(true);
@@ -20,9 +28,11 @@ export default function Home() {
         console.log("Proceeding with the sale of", amount, "crypto");
     };
 
+    console.log('Home component is rendered');
+
     return (
-        <>
-            <div className="home-container">
+        <div className="home-container">
+            <div className="sections-container">
                 <div className="balance-section">
                     <h1 className="balance">
                         <p className="current-balance-text">Current Balance</p>
@@ -56,19 +66,25 @@ export default function Home() {
                             </button>
                             <p className="button-label">Sell</p>
                         </div>
+
                     </div>
+
                 </div>
 
-                <div className="crypto-section">
-                    <CryptoValue />
+                <div className="currency-holding">
+                    <CurrencyHolding/>
                 </div>
+
             </div>
 
-            <SellModal
+            <CurrencyList/>
+
+            <Sell
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onProceed={handleProceed}
+                currencies={currencies}
             />
-        </>
+        </div>
     );
 }

@@ -9,7 +9,8 @@ body {
 .home-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: space-between;
     padding: 3rem 1rem;
     background-color: #121212;
     width: 100%;
@@ -19,12 +20,15 @@ body {
 }
 
 .balance-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
     width: 100%;
-    max-width: 900px;
+    max-width: 450px;
     text-align: center;
     margin-bottom: 2rem;
-    border: 1px solid #00c3ff;
-    box-shadow: 0 0 18px #00c3ff, 0 0 16px #00c3ff;
+    margin-left: 2rem;
     border-radius: 8px;
     padding: 1.5rem;
     box-sizing: border-box;
@@ -54,11 +58,26 @@ body {
     font-weight: bold;
 }
 
-.crypto-section {
+.sections-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 2rem;
     width: 100%;
-    margin-top: 1.5rem;
+}
+
+.crypto-section {
+    flex: 1;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.crypto-section:last-child {
+    border-top: 2px solid #00c3ff;
 }
 
 .currency-sign {
@@ -77,8 +96,8 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
-    justify-content: center;
-    margin-top: 2rem;
+    justify-content: flex-start;
+    margin-top: 0.5rem;
     width: 100%;
 }
 
@@ -118,6 +137,21 @@ button:hover {
     background-color: #9cd5fa;
 }
 
+.crypto-section {
+    width: 100%;
+    min-width: 300px;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    background-color: #2b2b2b;
+    border-radius: 8px;
+    margin-top: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.currency-holding {
+    flex: 1 1 100%;
+}
+
 @media (max-width: 768px) {
     .home-container {
         padding: 2rem;
@@ -125,19 +159,39 @@ button:hover {
 
     .balance-section {
         padding: 1rem;
+        align-items: center;
         max-width: 100%;
+        text-align: center;
+        margin-left: 0;
     }
 
     .button-container {
-        gap: 1rem;
+        gap: 3rem;
+        justify-content: center;
+        align-items: center;
     }
 
     .button-group {
         flex: 1 1 25%;
-        min-width: 60px;
+        min-width: 40px;
+        max-width: 10px;
     }
 
     .balance-section h1 {
         font-size: 1.25rem;
+    }
+
+    .sections-container {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .crypto-section {
+        width: 100%;
+    }
+
+    .balance-section {
+        max-width: 100%;
     }
 }

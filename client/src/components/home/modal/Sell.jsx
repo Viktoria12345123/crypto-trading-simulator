@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 
-function Sell({ isOpen, onClose, onProceed }) {
+function Sell({ isOpen, onClose, onProceed, currencies }) {
     const [amount, setAmount] = useState("");
+    const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]?.code || "");  // Default to the first currency
 
     const handleAmountChange = (e) => {
         setAmount(e.target.value);
+    };
+
+    const handleCurrencyChange = (e) => {
+        setSelectedCurrency(e.target.value);
     };
 
     return (
@@ -12,26 +17,24 @@ function Sell({ isOpen, onClose, onProceed }) {
             <div className="modal-overlay">
                 <div className="modal-container">
                     <div className="modal-header">
-                        <span>Specify Amount To Sell
-                        </span>
-                        <div className="close-btn" onClick={onClose}>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6 text-[#64748B]"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
-                            </svg>
-                        </div>
+                        <span>Specify Amount To Sell</span>
                     </div>
                     <div className="modal-body">
+                        <div className="input-section">
+                            <label htmlFor="currency-select">Choose Currency:</label>
+                            <select
+                                id="currency-select"
+                                value={selectedCurrency}
+                                onChange={handleCurrencyChange}
+                                className="input-field"
+                            >
+                                {currencies.map((currency) => (
+                                    <option key={currency.code} value={currency.code}>
+                                        {currency.name} ({currency.code})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div className="input-section">
                             <input
                                 type="number"
@@ -49,7 +52,7 @@ function Sell({ isOpen, onClose, onProceed }) {
                         <button
                             className="proceed-btn"
                             onClick={() => {
-                                onProceed(amount);
+                                onProceed(selectedCurrency, amount); // Passing the selected currency and amount
                                 onClose();
                             }}
                         >
