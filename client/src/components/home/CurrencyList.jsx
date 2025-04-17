@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import CurrencyItem from "./CurrencyItem.jsx";
 
-
 const top20Cryptocurrencies = [
-    { symbol: 'BTC', name: 'Bitcoin' },
+
+    { symbol: 'DOT', name: 'Polkadot' },
     { symbol: 'ETH', name: 'Ethereum' },
+    { symbol: 'LINK', name: 'Chainlink' },
     { symbol: 'USDT', name: 'Tether' },
-    { symbol: 'USDC', name: 'USD Coin' },
     { symbol: 'SOL', name: 'Solana' },
+    { symbol: 'USDC', name: 'USD Coin' },
     { symbol: 'ADA', name: 'Cardano' },
     { symbol: 'PAXG', name: 'Paxos Gold' },
     { symbol: 'CRV', name: 'Curve DAO Token' },
     { symbol: 'XCN', name: 'Chain' },
-    { symbol: 'DOT', name: 'Polkadot' },
-    { symbol: 'LINK', name: 'Chainlink' },
     { symbol: 'LTC', name: 'Litecoin' },
     { symbol: 'AVAX', name: 'Avalanche' },
     { symbol: 'ATOM', name: 'Cosmos' },
@@ -22,10 +21,9 @@ const top20Cryptocurrencies = [
     { symbol: 'MATIC', name: 'Polygon' },
     { symbol: 'UNI', name: 'Uniswap' },
     { symbol: 'ALGO', name: 'Algorand' },
+    { symbol: 'BTC', name: 'Bitcoin' },
     { symbol: 'AAVE', name: 'Aave' }
 ];
-
-
 
 export default function CurrencyList() {
     const [prices, setPrices] = useState({});
@@ -35,7 +33,6 @@ export default function CurrencyList() {
         const websocket = new WebSocket('wss://ws.kraken.com');
 
         websocket.onopen = () => {
-            console.log("WebSocket connection established");
 
             const pairs = top20Cryptocurrencies.map(crypto => `${crypto.symbol}/USD`);
             console.log('Subscribing to channel...');
@@ -48,7 +45,6 @@ export default function CurrencyList() {
 
         websocket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log(message);
 
             if (Array.isArray(message) && message[1] && message[1].a) {
                 const pair = message[3];

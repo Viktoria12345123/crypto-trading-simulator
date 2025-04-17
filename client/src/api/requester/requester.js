@@ -6,6 +6,7 @@ async function requester(method, url, data) {
             method,
             url,
             data,
+            withCredentials: true,
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
