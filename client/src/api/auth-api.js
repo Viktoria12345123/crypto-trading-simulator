@@ -11,8 +11,8 @@ export const login = async (username, password) => {
 };
 
 export async function getSession() {
-    const session = await request.get(`${BASE_URL_SPRING}/session`);
-    return session;
+    return await request.get(`${BASE_URL}/session`);
+
 }
 
 

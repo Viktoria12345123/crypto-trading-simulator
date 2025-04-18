@@ -41,10 +41,8 @@ public class JwtService{
                     .getBody();
 
             return claims.get(claimKey);
-        } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Token expired", e);
         } catch (JwtException e) {
-            throw new RuntimeException("Invalid token", e);
+           return null;
         }
     }
 

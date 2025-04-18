@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import {login} from "../api/auth-api.js";
 
 const useForm = (initialValues, submitHandler) => {
     const [values, setValues] = useState(initialValues);
@@ -15,8 +14,6 @@ const useForm = (initialValues, submitHandler) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("in handler")
-        console.log(values)
         setErrors({});
 
         try {

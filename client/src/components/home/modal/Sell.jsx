@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-function Sell({ isOpen, onClose, onProceed, currencies }) {
+function Sell({ isOpen, onClose, currencies }) {
     const [amount, setAmount] = useState("");
-    const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]?.code || "");  // Default to the first currency
+    const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]?.code || "");
 
     const handleAmountChange = (e) => {
         setAmount(e.target.value);
@@ -12,12 +12,16 @@ function Sell({ isOpen, onClose, onProceed, currencies }) {
         setSelectedCurrency(e.target.value);
     };
 
+    const handleProceed = ( selectedCurrency ,amount) => {
+        console.log(selectedCurrency, amount);
+    };
+
     return (
         isOpen && (
             <div className="modal-overlay">
                 <div className="modal-container">
                     <div className="modal-header">
-                        <span>Specify Amount To Sell</span>
+                        <span>Specify Amount To SELL</span>
                     </div>
                     <div className="modal-body">
                         <div className="input-section">
@@ -29,8 +33,8 @@ function Sell({ isOpen, onClose, onProceed, currencies }) {
                                 className="input-field"
                             >
                                 {currencies.map((currency) => (
-                                    <option key={currency.code} value={currency.code}>
-                                        {currency.name} ({currency.code})
+                                    <option key={currency.symbol} value={currency.symbol}>
+                                        {currency.name} ({currency.symbol})
                                     </option>
                                 ))}
                             </select>
@@ -52,7 +56,7 @@ function Sell({ isOpen, onClose, onProceed, currencies }) {
                         <button
                             className="proceed-btn"
                             onClick={() => {
-                                onProceed(selectedCurrency, amount); // Passing the selected currency and amount
+                                handleProceed(selectedCurrency, amount);
                                 onClose();
                             }}
                         >

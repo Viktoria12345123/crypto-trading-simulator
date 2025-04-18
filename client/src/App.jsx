@@ -5,6 +5,7 @@ import Header from "./components/header/Header.jsx";
 import LoginForm from "./components/login/Login.jsx";
 import RegisterForm from "./components/register/Register.jsx";
 import { AuthContext } from "./contexts/AuthContext.js";
+import useSession from "./hooks/useAuth.js";
 
 function App() {
     const [authState, setAuthState] = useState({});
@@ -13,29 +14,14 @@ function App() {
         setAuthState(state);
     };
 
+    useSession( changeAuthState );
+
     const contextData = {
         id: authState.id,
         username: authState.username,
         isAuthenticated: !!authState.username,
         changeAuthState,
     };
-
-    // useEffect(() => {
-    //     const initializeAuthState = async () => {
-    //         const response = await getSession();
-    //
-    //         if (response) {
-    //             changeAuthState({
-    //                 _id: response.id,
-    //                 email: response.email,
-    //                 isAdmin: response.role == 'ADMIN'
-    //             });
-    //         }
-    //
-    //     }
-    //
-    //     initializeAuthState();
-    // }, []);
 
     return (
         <AuthContext.Provider value={contextData}>

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 async function requester(method, url, data) {
-    try {
+
         const response = await axios({
             method,
             url,
@@ -14,11 +14,6 @@ async function requester(method, url, data) {
         });
 
         return response?.data;
-
-    } catch (error) {
-        console.error(`Request failed: ${method} ${url}`, error);
-        return [];
-    }
 }
 
 export const get = (url, data) => requester('GET', url, data);

@@ -3,7 +3,6 @@ import useForm from "../../hooks/useForm.js";
 import {useAuthContext} from "../../contexts/AuthContext.js";
 import {login} from "../../api/auth-api.js";
 import {useNavigate} from "react-router-dom";
-// adjust the path if needed
 
 export default function LoginForm() {
     const initialValues = { username: '', password: '' };
@@ -12,20 +11,16 @@ export default function LoginForm() {
 
     const submitHandler = async (formValues) => {
 
-        console.log("submitting...");
         const authData = await login(formValues.username, formValues.password);
-
-        console.log(authData);
 
         if (authData) {
             changeAuthState({
-                _id: authData.id,
+                id: authData.id,
                 username: authData.username,
             })
 
             navigate('/')
         }
-
     };
 
     const { values, handleChange, handleSubmit, errors } = useForm(initialValues, submitHandler);

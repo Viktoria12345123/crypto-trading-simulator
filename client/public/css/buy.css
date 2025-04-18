@@ -1,0 +1,47 @@
+.crypto-item {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.crypto-icon-wrapper {
+    margin-bottom: 0.5rem;
+}
+
+.crypto-info h3 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.buy-button {
+    margin: 1em;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.buy-button:hover {
+    background-color: #218838;
+}
+
+.buy-inline-input {
+    margin-top: 0.5rem;
+}
+
+.buy-input {
+    position: absolute;
+    top: 4.5em;
+    width: 120px;
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
