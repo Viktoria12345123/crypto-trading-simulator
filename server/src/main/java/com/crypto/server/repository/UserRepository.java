@@ -18,6 +18,13 @@ public class UserRepository {
         this.dataSource = dataSource;
     }
 
+    /**
+     * Creates a new user in the database.
+     *
+     * @param request       The registration request containing username and password
+     * @return              The created User object with generated ID
+     * @throws SQLException If a database error occurs
+     */
     public User create(RegisterRequest request) throws SQLException {
 
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
@@ -47,6 +54,13 @@ public class UserRepository {
         }
     }
 
+    /**
+     * Finds a user by username (used for login).
+     *
+     * @param request       The login request containing username
+     * @return              The matching User object or null if not found
+     * @throws SQLException If a database error occurs
+     */
     public User find(LoginRequest request) throws SQLException {
 
         String sql = "SELECT * FROM users WHERE username = ?";
@@ -69,6 +83,13 @@ public class UserRepository {
         }
     }
 
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param id            The user ID
+     * @return              The User object or null if not found
+     * @throws SQLException If a database error occurs
+     */
     public User findById(int id) throws SQLException {
         String sql = "SELECT id, username, balance FROM users WHERE id = ?";
 
@@ -89,6 +110,13 @@ public class UserRepository {
         }
     }
 
+    /**
+     * Updates a user's balance.
+     *
+     * @param userId        The user ID
+     * @param newBalance    The new balance to set
+     * @throws SQLException If a database error occurs
+     */
     public void updateBalance(int userId, BigDecimal newBalance) throws SQLException {
         String sql = "UPDATE users SET balance = ? WHERE id = ?";
 

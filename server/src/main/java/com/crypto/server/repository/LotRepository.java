@@ -19,6 +19,17 @@ public class LotRepository {
         this.dataSource = dataSource;
     }
 
+    /**
+     * Inserts a new purchase lot into the database.
+     *
+     * @param userId         The ID of the user making the purchase
+     * @param symbol         The crypto symbol (e.g., BTC)
+     * @param originalAmount The total amount of crypto purchased
+     * @param remainingAmount The remaining amount available for selling
+     * @param pricePerUnit   The price per unit of the crypto
+     * @param transactionId  The associated buy transaction ID
+     * @throws SQLException  If a database error occurs
+     */
     public void insertLot(int userId, String symbol, BigDecimal originalAmount, BigDecimal remainingAmount, BigDecimal pricePerUnit, int transactionId) throws SQLException {
         String sql = """
             INSERT INTO purchase_lots (user_id, coin_symbol, original_amount, remaining_amount, price_per_unit, buy_transaction_id)
@@ -39,6 +50,14 @@ public class LotRepository {
         }
     }
 
+    /**
+     * Retrieves open purchase lots for a given user and symbol using FIFO order.
+     *
+     * @param userId        The user ID
+     * @param symbol        The crypto symbol (e.g., BTC)
+     * @return              A list of open (unsold) purchase lots ordered by creation time
+     * @throws SQLException If a database error occurs
+     */
     public List<PurchaseLot> findOpenLotsFIFO(int userId, String symbol) throws SQLException {
         String sql = """
             SELECT * FROM purchase_lots
@@ -73,6 +92,13 @@ public class LotRepository {
         return lots;
     }
 
+    /**
+     * Reduces the remaining amount of a given purchase lot.
+     *
+     * @param lotId             The ID of the lot to update
+     * @param amountToSubtract The amount of crypto sold to subtract
+     * @throws SQLException     If a database error occurs
+     */
     public void reduceLotAmount(int lotId, BigDecimal amountToSubtract) throws SQLException {
         String sql = """
             UPDATE purchase_lots
@@ -90,6 +116,13 @@ public class LotRepository {
         }
     }
 
+    /**
+     * Retrieves a summary of current crypto holdings for a user.
+     *
+     * @param userId        The ID of the user
+     * @return              A list of holdings (symbol and total remaining amount)
+     * @throws SQLException If a database error occurs
+     */
     public List<Holding> findHoldingsByUserId(int userId) throws SQLException {
         String sql = """
         SELECT coin_symbol, SUM(remaining_amount) AS total_amount
