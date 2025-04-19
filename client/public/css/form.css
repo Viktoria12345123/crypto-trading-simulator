@@ -54,3 +54,7 @@ body {
 .submit-btn:hover {
     opacity: 0.9;
 }
+
+.error-msg {
+    color: red;
+}

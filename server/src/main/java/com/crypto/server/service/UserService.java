@@ -1,24 +1,32 @@
 package com.crypto.server.service;
 
+import com.crypto.server.config.exceptions.NotFoundException;
 import com.crypto.server.model.User;
+import com.crypto.server.repository.LotRepository;
+import com.crypto.server.repository.TransactionRepository;
 import com.crypto.server.repository.UserRepository;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final LotRepository lotRepository;
+    private final TransactionRepository transactionRepository;
 
-    public UserService(UserRepository userRepository, JwtService jwtService) {
+    public UserService(UserRepository userRepository, LotRepository lotRepository, TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
+        this.lotRepository = lotRepository;
+        this.transactionRepository = transactionRepository;
     }
 
-    public User register(RegisterRequest request) throws SQLException {
+    public User register(RegisterRequest request) {
 
         if(!Objects.equals(request.password(), request.rePass())) {
             throw new IllegalArgumentException("Passwords do not match");
@@ -27,18 +35,29 @@ public class UserService {
          return userRepository.create(request);
     }
 
-    public User login(LoginRequest request) throws SQLException {
+    public User login(LoginRequest request)  {
 
         User user = userRepository.find(request);
 
         if(user == null) {
-            throw new RuntimeException("User not found");
+            throw new NotFoundException("User not found");
+        }
+
+        if(!user.getPassword().equals(request.password())) {
+            throw new IllegalArgumentException("Passwords do not match");
         }
 
         return user;
     }
 
-    public User getUserById(int id) throws SQLException {
+    public User getUserById(int id) {
         return userRepository.findById(id);
+    }
+
+    @Transactional
+    public void resetUserAccount(int userId)  {
+        lotRepository.deleteByUserId(userId);
+        transactionRepository.deleteByUserId(userId);
+        userRepository.updateBalance(userId, new BigDecimal("10000"));
     }
 }

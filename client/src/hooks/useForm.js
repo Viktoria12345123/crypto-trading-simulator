@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const useForm = (initialValues, submitHandler) => {
     const [values, setValues] = useState(initialValues);
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -19,11 +19,9 @@ const useForm = (initialValues, submitHandler) => {
         try {
             await submitHandler(values);
         } catch (err) {
-            setErrors(err.response?.data?.errors || { general: 'Something went wrong' });
+            setErrors(err.response?.data ||  'Something went wrong' );
         }
     };
-
-    console.log(errors)
 
     return {
         values,

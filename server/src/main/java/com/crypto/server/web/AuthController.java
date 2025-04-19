@@ -5,15 +5,16 @@ import com.crypto.server.service.JwtService;
 import com.crypto.server.service.UserService;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,14 +32,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest, BindingResult bindingResult, HttpServletResponse response) throws SQLException {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest, BindingResult bindingResult, HttpServletResponse response)  {
 
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
         }
 
        User user = userService.register(registerRequest);
-       System.out.println(user);
        String token = jwtService.generateToken(user.getId(), user.getUsername());
 
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
@@ -55,7 +55,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult, HttpServletResponse response) throws SQLException {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult, HttpServletResponse response)  {
 
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
@@ -73,7 +73,7 @@ public class AuthController {
                 .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
-        return ResponseEntity.status(HttpStatus.CREATED).body("");
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @GetMapping("/session")
@@ -87,8 +87,8 @@ public class AuthController {
         }
 
         Map<String, Object> userData = new HashMap<>();
-        userData.put("id", (int) id);
-        userData.put("username",(String) username);
+        userData.put("id", id);
+        userData.put("username", username);
 
         return ResponseEntity.ok(userData);
     }

@@ -15,7 +15,8 @@ export default function RegisterForm() {
     const { changeAuthState } = useAuthContext();
 
     const submitHandler = async (formValues) => {
-        const authData = await register(formValues.username, formValues.password, formValues.rePass);
+        const response = await register(formValues.username, formValues.password, formValues.rePass);
+        const authData = response.data
 
         if (authData) {
             changeAuthState({

@@ -5,15 +5,17 @@ const useSession = (changeAuthState) => {
 
     useEffect(() => {
         const fetchSession = async () => {
-                const data = await getSession();
+            try {
+                const response = await getSession();
+                const data = response.data;
 
-                    changeAuthState({
-                        id: data.id,
-                        username: data.username
-                    });
-
+                changeAuthState({
+                    id: data.id,
+                    username: data.username
+                });
+            } catch (err) {
+            }
         };
-
         fetchSession();
     }, []);
 };

@@ -5,12 +5,8 @@ import com.crypto.server.service.JwtService;
 import com.crypto.server.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 @RestController
@@ -27,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/balance")
-    public ResponseEntity<?> getUserBalance(@CookieValue(name = "jwt", required = false) String token) throws SQLException {
+    public ResponseEntity<?> getUserBalance(@CookieValue(name = "jwt", required = false) String token)  {
 
         Object id =jwtService.extractClaim(token, "_id");
         if (id == null) {
@@ -41,6 +37,19 @@ public class UserController {
         }
 
         return ResponseEntity.ok(Map.of("balance", user.getBalance()));
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<?> resetUser(@CookieValue(name = "jwt", required = false) String token) {
+        Object id = jwtService.extractClaim(token, "_id");
+
+        if (id == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        userService.resetUserAccount((int) id);
+
+        return ResponseEntity.ok(Map.of("message", "Account reset successful"));
     }
 
 

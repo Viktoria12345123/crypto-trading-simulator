@@ -11,20 +11,19 @@ export default function LoginForm() {
 
     const submitHandler = async (formValues) => {
 
-        const authData = await login(formValues.username, formValues.password);
+        const response = await login(formValues.username, formValues.password);
+        const authData = response.data
 
         if (authData) {
             changeAuthState({
                 id: authData.id,
                 username: authData.username,
             })
-
-            navigate('/')
+            navigate("/")
         }
     };
 
     const { values, handleChange, handleSubmit, errors } = useForm(initialValues, submitHandler);
-
     return (
         <div className="form-wrapper">
             <form className="form-container" onSubmit={handleSubmit}>
@@ -48,7 +47,7 @@ export default function LoginForm() {
                     className="input"
                 />
 
-                {errors.general && <p className="error-msg">{errors.general}</p>}
+                {errors && <p className="error-msg">{errors}</p>}
 
                 <button className="submit-btn">Login</button>
             </form>

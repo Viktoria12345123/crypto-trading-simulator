@@ -7,8 +7,8 @@ const useBalance = () => {
     useEffect(() => {
         const fetchBalance = async () => {
             try {
-                const data = await getBalance();
-                setBalance(data.balance);
+                const response = await getBalance();
+                setBalance(response.data.balance);
             } catch (error) {
                 console.error("Failed to fetch balance:", error);
             }

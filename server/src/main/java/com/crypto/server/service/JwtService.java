@@ -1,5 +1,6 @@
 package com.crypto.server.service;
 
+import com.crypto.server.config.exceptions.UnauthorizedException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,14 +43,12 @@ public class JwtService{
 
             return claims.get(claimKey);
         } catch (JwtException e) {
-           return null;
+          throw new UnauthorizedException("Invalid JWT token");
         }
     }
 
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
-
-
 }
 

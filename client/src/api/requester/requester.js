@@ -13,7 +13,7 @@ async function requester(method, url, data) {
             },
         });
 
-        return response?.data;
+        return response;
 }
 
 export const get = (url, data) => requester('GET', url, data);

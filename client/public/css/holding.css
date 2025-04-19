@@ -46,3 +46,24 @@
 .currency-item .currency-value {
     color: #ff9900;
 }
+
+.no-holdings-message {
+    text-align: center;
+    padding: 15px;
+    border: 2px dashed #555;
+    border-radius: 8px;
+    background-color: #1f1f1f;
+    color: #888;
+    font-style: italic;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.sell-button {
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    background-color: dodgerblue;
+}
+
+

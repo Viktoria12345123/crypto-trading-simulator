@@ -6,6 +6,8 @@ import LoginForm from "./components/login/Login.jsx";
 import RegisterForm from "./components/register/Register.jsx";
 import { AuthContext } from "./contexts/AuthContext.js";
 import useSession from "./hooks/useAuth.js";
+import Transactions from "./components/transactions/Transaction.jsx";
+import PrivateRoute from "./components/routing/PrivateRoute.jsx";
 
 function App() {
     const [authState, setAuthState] = useState({});
@@ -28,7 +30,16 @@ function App() {
             <BrowserRouter>
                 <Header />
                 <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/" element={
+                        <PrivateRoute>
+                            <Home />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/transactions" element={
+                        <PrivateRoute>
+                            <Transactions />
+                        </PrivateRoute>
+                    } />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/register" element={<RegisterForm />} />
                 </Routes>

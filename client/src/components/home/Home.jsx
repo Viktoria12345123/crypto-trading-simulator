@@ -7,10 +7,15 @@ import CurrencyList from "./cryptoDisplay/CurrencyList.jsx";
 import {useAuthContext} from "../../contexts/AuthContext.js";
 import useBalance from "../../hooks/useBalance.js";
 import useTop20Cryptos from "../../hooks/useTop20Cryptos.js";
+import {reset} from "../../api/user-api.js";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Home() {
     const [isSellModalOpen, setIsSellModalOpen] = useState(false);
     const pricesRef = useRef({});
+    const navigate = useNavigate();
+
 
     const { id } = useAuthContext();
     const balance = useBalance();
@@ -23,8 +28,15 @@ export default function Home() {
     console.log("reload")
 
     const handleSellClick = () => setIsSellModalOpen(true);
-    const handleCloseSellModal = () => setIsSellModalOpen(false);
-    const handleProceed = (amount) => console.log("Proceeding with the sale of", amount, "crypto");
+
+    const handleResetClick = async() => {
+        await reset();
+        window.location.reload();
+    };
+
+    const handleTransactionsClick = () => {
+        navigate("/transactions");
+    };
 
     return (
         <div className="home-container">
@@ -38,24 +50,18 @@ export default function Home() {
                     </h1>
                     <div className="button-container">
                         <div className="button-group">
-                            <button className="transaction-btn"><i className="fa-solid fa-money-bill-transfer"></i></button>
+                            <button className="transaction-btn" onClick={handleTransactionsClick}><i className="fa-solid fa-money-bill-transfer"></i></button>
                             <p className="button-label">Transactions</p>
                         </div>
                         <div className="button-group">
-                            <button className="reset-btn"><i className="fa-solid fa-rotate"></i></button>
+                            <button className="reset-btn" onClick={handleResetClick}><i className="fa-solid fa-rotate"></i></button>
                             <p className="button-label">Reset</p>
-                        </div>
-                        <div className="button-group">
-                            <button className="sell-btn" onClick={handleSellClick}>
-                                <i className="fa-solid fa-money-bills"></i>
-                            </button>
-                            <p className="button-label">Sell</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="currency-holding">
-                    <CurrencyHolding/>
+                    <CurrencyHolding pricesRef={pricesRef} />
                 </div>
             </div>
 
@@ -63,13 +69,6 @@ export default function Home() {
                 top20Cryptocurrencies={top20Cryptocurrencies}
                 pricesRef={pricesRef}
                 balance={balance}
-            />
-
-            <Sell
-                isOpen={isSellModalOpen}
-                onClose={handleCloseSellModal}
-                onProceed={handleProceed}
-                currencies={top20Cryptocurrencies}
             />
         </div>
     );

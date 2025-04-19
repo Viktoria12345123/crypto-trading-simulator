@@ -14,6 +14,10 @@ export const getHoldings = async () => {
     return await request.get(`${BASE_URL}/holdings`);
 }
 
+export const getTransactions = async () => {
+    return await request.get(`${BASE_URL}/transactions`);
+}
+
 
 
 
