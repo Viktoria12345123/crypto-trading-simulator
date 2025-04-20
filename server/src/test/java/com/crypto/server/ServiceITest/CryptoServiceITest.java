@@ -14,9 +14,13 @@ import com.crypto.server.web.dto.CryptoTradeRequest;
 import com.crypto.server.web.dto.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -24,10 +28,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Import(CryptoService.class)
 @Transactional
-public class CryptoServiceITest {
+@TestPropertySource(locations = "classpath:application-test.properties")
+@Sql(scripts = "classpath:schema.sql")
+public class CryptoServiceITest{
 
     @Autowired
     private CryptoService cryptoService;

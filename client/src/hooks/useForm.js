@@ -14,12 +14,14 @@ const useForm = (initialValues, submitHandler) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({});
+        setErrors('');
 
         try {
             await submitHandler(values);
         } catch (err) {
-            setErrors(err.response?.data ||  'Something went wrong' );
+           const message = ( err.response?.data)
+            console.log(message)
+            setErrors(message);
         }
     };
 

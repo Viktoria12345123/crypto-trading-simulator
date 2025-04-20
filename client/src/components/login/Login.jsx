@@ -19,11 +19,13 @@ export default function LoginForm() {
                 id: authData.id,
                 username: authData.username,
             })
-            navigate("/")
+            navigate("/home")
         }
     };
 
     const { values, handleChange, handleSubmit, errors } = useForm(initialValues, submitHandler);
+
+    console.log(errors)
     return (
         <div className="form-wrapper">
             <form className="form-container" onSubmit={handleSubmit}>

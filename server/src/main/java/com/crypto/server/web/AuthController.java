@@ -35,7 +35,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest, BindingResult bindingResult, HttpServletResponse response)  {
 
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(bindingResult.getAllErrors().getFirst().getDefaultMessage(), HttpStatus.BAD_REQUEST);
         }
 
        User user = userService.register(registerRequest);
@@ -58,7 +58,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult, HttpServletResponse response)  {
 
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(bindingResult.getAllErrors().getFirst(), HttpStatus.BAD_REQUEST);
         }
 
         User user = userService.login(loginRequest);

@@ -8,6 +8,7 @@ import { AuthContext } from "./contexts/AuthContext.js";
 import useSession from "./hooks/useAuth.js";
 import Transactions from "./components/transactions/Transaction.jsx";
 import PrivateRoute from "./components/routing/PrivateRoute.jsx";
+import LandingPage from "./components/landingPage/LandingPage.jsx";
 
 function App() {
     const [authState, setAuthState] = useState({});
@@ -30,7 +31,7 @@ function App() {
             <BrowserRouter>
                 <Header />
                 <Routes>
-                    <Route path="/" element={
+                    <Route path="/home" element={
                         <PrivateRoute>
                             <Home />
                         </PrivateRoute>
@@ -42,6 +43,7 @@ function App() {
                     } />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/register" element={<RegisterForm />} />
+                    <Route path="/" element={<LandingPage />} />
                 </Routes>
             </BrowserRouter>
         </AuthContext.Provider>

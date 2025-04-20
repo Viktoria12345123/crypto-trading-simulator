@@ -21,6 +21,7 @@ lerna-debug.log*
 *.iml
 *.ipr
 *.iws
+*.env
 .vscode/
 .DS_Store
 

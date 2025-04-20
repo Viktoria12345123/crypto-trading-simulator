@@ -62,7 +62,7 @@ export default function RegisterForm() {
                     className="input"
                 />
 
-                {errors.general && <p className="error-msg">{errors.general}</p>}
+                {errors && <p className="error-msg">{errors}</p>}
 
                 <button type="submit" className="submit-btn">Register</button>
             </form>
