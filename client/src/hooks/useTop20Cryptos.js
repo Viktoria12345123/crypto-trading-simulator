@@ -15,6 +15,9 @@ const useTop20Cryptos = (pricesRef) => {
                             order: "market_cap_desc",
                             per_page: 20,
                             page: 1
+                        },
+                        headers: {
+                            'Accept': 'application/json'
                         }
                     }
                 );

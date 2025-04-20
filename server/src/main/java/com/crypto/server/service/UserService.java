@@ -39,10 +39,6 @@ public class UserService {
 
         User user = userRepository.find(request);
 
-        if(user == null) {
-            throw new NotFoundException("User not found");
-        }
-
         if(!user.getPassword().equals(request.password())) {
             throw new IllegalArgumentException("Passwords do not match");
         }

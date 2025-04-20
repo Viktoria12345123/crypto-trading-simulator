@@ -25,8 +25,13 @@ export default function CurrencyItem({ symbol, displayName, price, currency , ba
         if (!isBuying) {
             setIsBuying(true);
         } else {
-            const cost = parseFloat(price) * buyAmount
 
+            if(buyAmount <= 0) {
+                toast.error(`Negative amounts are not allowed.`);
+                return
+            }
+
+            const cost = parseFloat(price) * buyAmount
             if(cost > balance) {
                 toast.error(`Insufficient funds for buying ${symbol} - ${cost}$`);
                 return

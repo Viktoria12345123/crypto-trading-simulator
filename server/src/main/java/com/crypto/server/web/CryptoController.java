@@ -6,8 +6,12 @@ import com.crypto.server.repository.LotRepository;
 import com.crypto.server.service.CryptoService;
 import com.crypto.server.service.JwtService;
 import com.crypto.server.web.dto.CryptoTradeRequest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -39,7 +43,7 @@ public class CryptoController {
     @PostMapping("/sell")
     public ResponseEntity<?> sellCrypto(@RequestBody CryptoTradeRequest request, @CookieValue("jwt") String token) throws SQLException {
         cryptoService.sell(token, request);
-        return ResponseEntity.ok("Sell successful. Profit: $");
+        return ResponseEntity.ok("Sell successful.");
     }
 
     @GetMapping("/holdings")
@@ -57,7 +61,5 @@ public class CryptoController {
             return ResponseEntity.ok(transactions);
 
     }
-
-
 
 }

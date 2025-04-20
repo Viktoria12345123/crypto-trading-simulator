@@ -71,11 +71,17 @@ public class CryptoService {
     public void sell(String token, CryptoTradeRequest request) {
         int id = (int) jwtService.extractClaim(token, "_id");
 
+        if(userRepository.findById(id) == null) throw new NotFoundException("User not found");
+
         BigDecimal amountToSell = request.amount();
         BigDecimal sellPricePerUnit = request.cost().divide(request.amount(), 2, RoundingMode.HALF_UP);
         BigDecimal profit = BigDecimal.ZERO;
 
         List<PurchaseLot> fifoLots = lotRepository.findOpenLotsFIFO(id, request.symbol());
+
+        if (fifoLots.isEmpty()) {
+            throw new IllegalArgumentException("No open lots available for the specified symbol");
+        }
 
         for (PurchaseLot lot : fifoLots) {
             if (amountToSell.compareTo(BigDecimal.ZERO) <= 0) break;

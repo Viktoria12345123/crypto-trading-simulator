@@ -1,5 +1,6 @@
 package com.crypto.server.repository;
 
+import com.crypto.server.config.exceptions.NotFoundException;
 import com.crypto.server.model.User;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
@@ -57,7 +58,7 @@ public class UserRepository {
      * Finds a user by username (used for login).
      *
      * @param request The login request containing username
-     * @return The matching User object or null if not found
+     * @return The matching User object or NotFoundException if not found
      */
     public User find(LoginRequest request) {
         String sql = "SELECT id, username, password FROM users WHERE username = ?";
@@ -74,7 +75,7 @@ public class UserRepository {
                 String password = rs.getString("password");
                 return new User(id, username, password);
             } else {
-                return null;
+                throw new NotFoundException("Incorrect username or password");
             }
 
         } catch (SQLException e) {
@@ -87,7 +88,7 @@ public class UserRepository {
      * Retrieves a user by their ID.
      *
      * @param id The user ID
-     * @return The User object or null if not found
+     * @return The User object or NotFoundException if not found
      */
     public User findById(int id) {
         String sql = "SELECT id, username, balance FROM users WHERE id = ?";
@@ -104,7 +105,7 @@ public class UserRepository {
                 BigDecimal balance = rs.getBigDecimal("balance");
                 return new User(userId, username, balance != null ? balance : BigDecimal.ZERO);
             } else {
-                return null;
+                throw new NotFoundException("User with id '" + id + "' not found");
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find user by ID", e);

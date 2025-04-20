@@ -1,7 +1,6 @@
 package com.crypto.server.repository;
 
 import com.crypto.server.model.Transaction;
-import com.crypto.server.model.User;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;

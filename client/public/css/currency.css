@@ -25,7 +25,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
     justify-content: space-between;
-
     flex-wrap: nowrap;
 }
 
@@ -33,7 +32,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: #06c900; /* Green circle */
+    background-color: #06c900;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,9 +69,28 @@
     .crypto-item {
         width: 100%;
         padding: 10px;
+        align-items: flex-start;
     }
 
     .crypto-showcase {
         gap: 15px;
+    }
+
+}
+
+@media (max-width: 500px) {
+    .crypto-item {
+        width: 100%;
+        padding: 10px;
+        align-items: flex-start;
+
+    }
+
+    .crypto-showcase {
+        gap: 15px;
+    }
+
+    .crypto-icon-wrapper {
+        display: none;
     }
 }
