@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 import { useAuthContext } from "../../contexts/AuthContext";
 
 export default function PrivateRoute({ children }) {
     const { username, isAuthenticated } = useAuthContext();
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -18,7 +19,7 @@ export default function PrivateRoute({ children }) {
     }
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+      navigate("/login")
     }
 
     return children;

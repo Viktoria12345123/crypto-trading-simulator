@@ -24,7 +24,7 @@ export default function RegisterForm() {
                 username: authData.username,
             });
 
-            navigate('/');
+            navigate('/home');
         }
     };
 

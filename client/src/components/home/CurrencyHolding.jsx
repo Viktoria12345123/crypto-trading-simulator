@@ -34,13 +34,7 @@ export default function CurrencyHolding({pricesRef}) {
         try {
             await sell(amount, cost, holding.symbol, holding.name);
             alert(`Successfully sold ${amount} ${holding.symbol} for $${cost}`);
-
-            setHoldings(prev =>
-                prev.map(h => h.symbol === holding.symbol
-                    ? { ...h, amount: h.amount - amount }
-                    : h
-                ).filter(h => h.amount > 0)
-            );
+            window.location.reload();
         } catch (e) {
             console.error(e);
             alert("Sell failed");
