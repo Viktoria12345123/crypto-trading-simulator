@@ -5,7 +5,6 @@ import {useAuthContext} from "../../contexts/AuthContext.js";
 export default function Header() {
 
     const { username } = useAuthContext();
-    const navigate = useNavigate();
 
     return (
         <header className="header">

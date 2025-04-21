@@ -20,7 +20,6 @@ const useForm = (initialValues, submitHandler) => {
             await submitHandler(values);
         } catch (err) {
            const message = ( err.response?.data)
-            console.log(message)
             setErrors(message);
         }
     };

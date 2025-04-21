@@ -25,7 +25,6 @@ export default function LoginForm() {
 
     const { values, handleChange, handleSubmit, errors } = useForm(initialValues, submitHandler);
 
-    console.log(errors)
     return (
         <div className="form-wrapper">
             <form className="form-container" onSubmit={handleSubmit}>

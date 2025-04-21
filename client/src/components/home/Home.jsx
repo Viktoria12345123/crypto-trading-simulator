@@ -1,7 +1,5 @@
-import React, { useRef, useState, useEffect } from "react";
-import axios from "axios";
+import React, { useRef, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import Sell from "./modal/Sell.jsx";
 import CurrencyHolding from "./CurrencyHolding.jsx";
 import CurrencyList from "./cryptoDisplay/CurrencyList.jsx";
 import {useAuthContext} from "../../contexts/AuthContext.js";
@@ -24,8 +22,6 @@ export default function Home() {
     const formattedBalance = new Intl.NumberFormat("en-US", {
         currency: "USD"
     }).format(balance);
-
-    console.log("reload")
 
     const handleSellClick = () => setIsSellModalOpen(true);
 
