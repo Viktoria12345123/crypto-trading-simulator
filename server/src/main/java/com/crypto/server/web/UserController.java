@@ -32,10 +32,6 @@ public class UserController {
 
         User user = userService.getUserById((int) id);
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
         return ResponseEntity.ok(Map.of("balance", user.getBalance()));
     }
 

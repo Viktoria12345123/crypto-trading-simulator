@@ -3,6 +3,7 @@ package com.crypto.server.RepositoryUTest;
 import com.crypto.server.config.exceptions.NotFoundException;
 import com.crypto.server.model.User;
 import com.crypto.server.repository.UserRepository;
+import com.crypto.server.web.dto.AuthResponse;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,10 +60,10 @@ public class UserRepositoryUTest {
       when(resultSet.next()).thenReturn(true);
       when(resultSet.getInt(1)).thenReturn(1);
 
-      User user = userRepository.create(request);
+      AuthResponse user = userRepository.create(request);
 
-      assertEquals(1, user.getId());
-      assertEquals("testuser", user.getUsername());
+      assertEquals(1, user.id());
+      assertEquals("testuser", user.username());
 
       verify(preparedStatement).setString(1,"testuser");
       verify(preparedStatement).setString(2,"testpass");

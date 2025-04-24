@@ -2,6 +2,7 @@ package com.crypto.server.repository;
 
 import com.crypto.server.config.exceptions.NotFoundException;
 import com.crypto.server.model.User;
+import com.crypto.server.web.dto.AuthResponse;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
 import org.springframework.stereotype.Repository;
@@ -25,7 +26,7 @@ public class UserRepository {
      * @param request The registration request containing username and password
      * @return The created User object with generated ID
      */
-    public User create(RegisterRequest request) {
+    public AuthResponse create(RegisterRequest request) {
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
 
         try (Connection connection = dataSource.getConnection();
@@ -44,7 +45,7 @@ public class UserRepository {
             if (rs.next()) {
                 int id = rs.getInt(1);
                 String username = request.username();
-                return new User(id, username);
+                return new AuthResponse(id, username);
             } else {
                 throw new RuntimeException("Creating user failed, no ID obtained.");
             }

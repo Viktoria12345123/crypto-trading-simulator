@@ -21,15 +21,9 @@ import java.util.List;
 @RequestMapping("/api/crypto")
 public class CryptoController {
 
-
-    private final JwtService jwtService;
-    private final LotRepository lotRepository;
     private final CryptoService cryptoService;
 
-    public CryptoController(JwtService jwtService, LotRepository lotRepository, CryptoService cryptoService) {
-        this.jwtService = jwtService;
-
-        this.lotRepository = lotRepository;
+    public CryptoController(CryptoService cryptoService) {
         this.cryptoService = cryptoService;
     }
 
@@ -41,16 +35,16 @@ public class CryptoController {
     }
 
     @PostMapping("/sell")
-    public ResponseEntity<?> sellCrypto(@RequestBody CryptoTradeRequest request, @CookieValue("jwt") String token) throws SQLException {
-        cryptoService.sell(token, request);
+    public ResponseEntity<?> sellCrypto(@RequestBody CryptoTradeRequest request, @CookieValue("jwt") String jwt) throws SQLException {
+
+        cryptoService.sell(jwt, request);
         return ResponseEntity.ok("Sell successful.");
     }
 
     @GetMapping("/holdings")
     public ResponseEntity<?> getHoldings(@CookieValue("jwt") String jwt){
-        int userId = (int) jwtService.extractClaim(jwt, "_id");
 
-        List<Holding> holdings = lotRepository.findHoldingsByUserId(userId);
+        List<Holding> holdings =  cryptoService.holdings(jwt);
         return ResponseEntity.ok(holdings);
     }
 
@@ -59,7 +53,6 @@ public class CryptoController {
 
             List<Transaction> transactions = cryptoService.getTransactions(jwt);
             return ResponseEntity.ok(transactions);
-
     }
 
 }

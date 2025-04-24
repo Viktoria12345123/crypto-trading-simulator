@@ -3,6 +3,7 @@ package com.crypto.server.web;
 import com.crypto.server.model.User;
 import com.crypto.server.service.JwtService;
 import com.crypto.server.service.UserService;
+import com.crypto.server.web.dto.AuthResponse;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
 
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -32,57 +32,41 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest, BindingResult bindingResult, HttpServletResponse response)  {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest,
+                                      BindingResult bindingResult,
+                                      HttpServletResponse response) {
+
 
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(bindingResult.getAllErrors().getFirst().getDefaultMessage(), HttpStatus.BAD_REQUEST);
         }
 
-       User user = userService.register(registerRequest);
-       String token = jwtService.generateToken(user.getId(), user.getUsername());
-
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(7 * 24 * 60 * 60)
-                .sameSite("None")
-                .build();
-
-
-        response.setHeader("Set-Cookie", cookie.toString());
+        AuthResponse user = userService.register(registerRequest);
+        createTokenAndSetCookie(user, response);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult, HttpServletResponse response)  {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest,
+                                   BindingResult bindingResult,
+                                   HttpServletResponse response) {
 
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(bindingResult.getAllErrors().getFirst(), HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.login(loginRequest);
-        String token = jwtService.generateToken(user.getId(), user.getUsername());
-
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(7 * 24 * 60 * 60)
-                .sameSite("None")
-                .build();
-
-        response.setHeader("Set-Cookie", cookie.toString());
+        AuthResponse user = userService.login(loginRequest);
+        createTokenAndSetCookie(user, response);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @GetMapping("/session")
     public ResponseEntity<?> getSession(@CookieValue(name = "jwt", required = false) String token) {
 
-        Object id =  jwtService.extractClaim(token, "_id");
-        Object username =  jwtService.extractClaim(token, "username");
+        Object id = jwtService.extractClaim(token, "_id");
+        Object username = jwtService.extractClaim(token, "username");
 
-        if(id == null || username == null) {
+        if (id == null || username == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -93,6 +77,17 @@ public class AuthController {
         return ResponseEntity.ok(userData);
     }
 
+    private void createTokenAndSetCookie(AuthResponse user, HttpServletResponse response) {
+        String token = jwtService.generateToken(user.id(), user.username());
 
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .sameSite("None")
+                .build();
 
+        response.setHeader("Set-Cookie", cookie.toString());
+    }
 }

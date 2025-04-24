@@ -1,10 +1,7 @@
 package com.crypto.server.service;
 
 import com.crypto.server.config.exceptions.NotFoundException;
-import com.crypto.server.model.PurchaseLot;
-import com.crypto.server.model.Transaction;
-import com.crypto.server.model.TransactionType;
-import com.crypto.server.model.User;
+import com.crypto.server.model.*;
 import com.crypto.server.repository.LotRepository;
 import com.crypto.server.repository.TransactionRepository;
 import com.crypto.server.repository.UserRepository;
@@ -111,4 +108,9 @@ public class CryptoService {
         return revenue.subtract(costBasis);
     }
 
+    public List<Holding> holdings(String jwt) {
+
+        int userId = (int) jwtService.extractClaim(jwt, "_id");
+        return lotRepository.findHoldingsByUserId(userId);
+    }
 }

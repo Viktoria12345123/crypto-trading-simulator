@@ -9,6 +9,7 @@ import com.crypto.server.repository.TransactionRepository;
 import com.crypto.server.repository.UserRepository;
 import com.crypto.server.service.CryptoService;
 import com.crypto.server.service.JwtService;
+import com.crypto.server.web.dto.AuthResponse;
 import com.crypto.server.web.dto.CryptoTradeRequest;
 
 import com.crypto.server.web.dto.RegisterRequest;
@@ -55,13 +56,15 @@ public class CryptoServiceITest{
     private JwtService jwtService;
 
     private User testUser;
+    private AuthResponse authResponse;
     private String jwtToken;
 
     @BeforeEach
     public void setup() {
 
         RegisterRequest request = new RegisterRequest("testuser", "password", "password");
-        testUser = userRepository.create(request);
+        authResponse = userRepository.create(request);
+        testUser = new User(authResponse.id(), "testuser", "password");
 
         jwtToken = jwtService.generateToken(testUser.getId(), testUser.getUsername());
     }
@@ -79,8 +82,8 @@ public class CryptoServiceITest{
         List<Transaction> transactions = transactionRepository.findByUserId(testUser.getId());
         assertEquals(1, transactions.size());
         Transaction transaction = transactions.getFirst();
-        assertEquals(TransactionType.BUY.name(), transaction.getType());
-        assertEquals(new BigDecimal("200.00"), transaction.getPricePerUnit());
+        assertEquals(TransactionType.BUY.name(), transaction.type());
+        assertEquals(new BigDecimal("200.00"), transaction.pricePerUnit());
 
 
         List<PurchaseLot> purchaseLots = lotRepository.findOpenLotsFIFO(testUser.getId(), "BTC");
@@ -107,7 +110,7 @@ public class CryptoServiceITest{
         List<Transaction> transactions = transactionRepository.findByUserId(testUser.getId());
         assertEquals(2, transactions.size());
         Transaction transaction = transactions.getFirst();
-        assertEquals(TransactionType.SELL.name(), transaction.getType());
+        assertEquals(TransactionType.SELL.name(), transaction.type());
 
         List<PurchaseLot> purchaseLots = lotRepository.findOpenLotsFIFO(testUser.getId(), "BTC");
         assertEquals(1, purchaseLots.size());

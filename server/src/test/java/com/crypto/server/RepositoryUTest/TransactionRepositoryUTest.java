@@ -73,6 +73,6 @@ public class TransactionRepositoryUTest {
 
         List<Transaction> transactions = transactionRepository.findByUserId(42);
         assertEquals(1, transactions.size());
-        assertEquals("BUY", transactions.get(0).getType());
+        assertEquals("BUY", transactions.get(0).type());
     }
 }

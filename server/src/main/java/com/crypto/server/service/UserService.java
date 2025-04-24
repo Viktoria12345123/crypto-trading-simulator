@@ -5,6 +5,7 @@ import com.crypto.server.model.User;
 import com.crypto.server.repository.LotRepository;
 import com.crypto.server.repository.TransactionRepository;
 import com.crypto.server.repository.UserRepository;
+import com.crypto.server.web.dto.AuthResponse;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class UserService {
         this.transactionRepository = transactionRepository;
     }
 
-    public User register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request) {
 
         if(!Objects.equals(request.password(), request.rePass())) {
             throw new IllegalArgumentException("Passwords do not match");
@@ -35,7 +36,7 @@ public class UserService {
          return userRepository.create(request);
     }
 
-    public User login(LoginRequest request)  {
+    public AuthResponse login(LoginRequest request)  {
 
         User user = userRepository.find(request);
 
@@ -43,7 +44,7 @@ public class UserService {
             throw new IllegalArgumentException("Passwords do not match");
         }
 
-        return user;
+        return new AuthResponse(user.getId(), user.getUsername());
     }
 
     public User getUserById(int id) {

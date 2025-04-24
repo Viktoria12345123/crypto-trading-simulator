@@ -1,23 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { getTransactions } from "../../api/crypto-api.js";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import {useTransactions} from "../../hooks/useTransactions.js";
 
 export default function Transactions() {
-    const [transactions, setTransactions] = useState([]);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchTransactions = async () => {
-            try {
-                const response = await getTransactions();
-                setTransactions(response.data);
-            } catch (error) {
-                console.error("Failed to fetch transactions:", error);
-            }
-        };
-
-        fetchTransactions();
-    }, []);
+    const transactions= useTransactions();
 
     const handleNavigateHome = () => {
         navigate("/home");

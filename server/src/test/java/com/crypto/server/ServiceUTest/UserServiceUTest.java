@@ -6,6 +6,7 @@ import com.crypto.server.repository.LotRepository;
 import com.crypto.server.repository.TransactionRepository;
 import com.crypto.server.repository.UserRepository;
 import com.crypto.server.service.UserService;
+import com.crypto.server.web.dto.AuthResponse;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,10 +43,10 @@ public class UserServiceUTest {
     void testRegister_success() {
         RegisterRequest request = new RegisterRequest("user", "pass", "pass");
 
-        User user = new User(1, "user", new BigDecimal("10000"));
+        AuthResponse user = new AuthResponse(1, "user");
         when(userRepository.create(request)).thenReturn(user);
 
-        User result = userService.register(request);
+        AuthResponse result = userService.register(request);
         assertEquals(user, result);
     }
 
@@ -63,8 +64,8 @@ public class UserServiceUTest {
 
         when(userRepository.find(request)).thenReturn(user);
 
-        User result = userService.login(request);
-        assertEquals(user, result);
+        AuthResponse result = userService.login(request);
+        assertEquals(user.getUsername(), result.username());
     }
 
     @Test
