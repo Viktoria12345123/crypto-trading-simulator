@@ -1,5 +1,7 @@
 package com.crypto.server.ServiceITest;
 
+import com.crypto.server.config.exceptions.NotFoundException;
+import com.crypto.server.config.exceptions.PasswordMismatchException;
 import com.crypto.server.model.User;
 import com.crypto.server.repository.LotRepository;
 import com.crypto.server.repository.TransactionRepository;
@@ -9,8 +11,8 @@ import com.crypto.server.web.dto.AuthResponse;
 import com.crypto.server.web.dto.LoginRequest;
 import com.crypto.server.web.dto.RegisterRequest;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @Import(UserService.class)
@@ -41,27 +44,28 @@ public class UserServiceITest {
 
     @Test
     public void testRegisterUser() {
-
         RegisterRequest request = new RegisterRequest("alice", "password", "password");
+        HttpServletResponse response = mock(HttpServletResponse.class);
 
-        AuthResponse user = userService.register(request);
+        AuthResponse user = userService.register(request, response);
 
         assertNotNull(user);
         assertEquals("alice", user.username());
 
-        User persistedUser = userRepository.findById(user.id());
+        User persistedUser = userRepository.findById(user.id()).orElseThrow(() -> new NotFoundException("User not found"));
         assertNotNull(persistedUser);
         assertEquals(user.username(), persistedUser.getUsername());
     }
 
     @Test
     public void testLoginUser() {
-
         RegisterRequest registerRequest = new RegisterRequest("bob", "securepass", "securepass");
-        AuthResponse user = userService.register(registerRequest);
+        HttpServletResponse registerResponse = mock(HttpServletResponse.class);
+        AuthResponse user = userService.register(registerRequest, registerResponse);
 
         LoginRequest loginRequest = new LoginRequest("bob", "securepass");
-        AuthResponse loggedInUser = userService.login(loginRequest);
+        HttpServletResponse loginResponse = mock(HttpServletResponse.class);
+        AuthResponse loggedInUser = userService.login(loginRequest, loginResponse);
 
         assertNotNull(loggedInUser);
         assertEquals(user.username(), loggedInUser.username());
@@ -69,26 +73,26 @@ public class UserServiceITest {
 
     @Test
     public void testLoginUserWithWrongPassword() {
-
         RegisterRequest registerRequest = new RegisterRequest("carol", "password", "password");
-        AuthResponse user = userService.register(registerRequest);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        userService.register(registerRequest, response);
 
         LoginRequest loginRequest = new LoginRequest("carol", "wrongpassword");
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            userService.login(loginRequest);
-        });
+        HttpServletResponse loginResponse = mock(HttpServletResponse.class);
+
+        assertThrows(PasswordMismatchException.class, () -> userService.login(loginRequest, loginResponse));
     }
 
     @Test
     public void testResetUserAccount() {
-
         RegisterRequest registerRequest = new RegisterRequest("dave", "mypassword", "mypassword");
-        AuthResponse user = userService.register(registerRequest);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        AuthResponse user = userService.register(registerRequest, response);
 
         userService.resetUserAccount(user.id());
 
-        User updatedUser = userRepository.findById(user.id());
+        User updatedUser = userRepository.findById(user.id()).orElseThrow(() -> new NotFoundException("User not found"));
         assertNotNull(updatedUser);
         assertEquals(0, updatedUser.getBalance().compareTo(new BigDecimal("10000")));
     }

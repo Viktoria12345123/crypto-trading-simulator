@@ -22,19 +22,24 @@ public class JwtServiceITest {
 
     @Test
     void testGenerateAndExtractToken() {
-        String token = jwtService.generateToken(1, "testuser");
 
+        String token = jwtService.generateToken(1, "testuser");
         assertNotNull(token);
-        assertEquals("testuser", jwtService.extractClaim(token, "username"));
-        assertEquals(1, jwtService.extractClaim(token, "_id"));
+
+        int extractedId = jwtService.extractClaim(token, "_id", Integer.class);
+        String extractedUsername = jwtService.extractClaim(token, "username", String.class);
+
+        assertEquals(1, extractedId);
+        assertEquals("testuser", extractedUsername);
     }
+
 
     @Test
     void testExtractClaim_invalidToken_throwsException() {
         String invalidToken = "invalid.jwt.token";
 
         assertThrows(UnauthorizedException.class, () -> {
-            jwtService.extractClaim(invalidToken, "username");
+            jwtService.extractClaim(invalidToken, "username", String.class);
         });
     }
 }

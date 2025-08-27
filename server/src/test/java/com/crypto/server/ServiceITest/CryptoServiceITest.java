@@ -1,5 +1,6 @@
 package com.crypto.server.ServiceITest;
 
+import com.crypto.server.config.exceptions.NotFoundException;
 import com.crypto.server.model.PurchaseLot;
 import com.crypto.server.model.Transaction;
 import com.crypto.server.model.TransactionType;
@@ -76,7 +77,7 @@ public class CryptoServiceITest{
 
         cryptoService.buy(jwtToken, buyRequest);
 
-        User updatedUser = userRepository.findById(testUser.getId());
+        User updatedUser = userRepository.findById(testUser.getId()).orElseThrow(() -> new NotFoundException("User Not Found"));
         assertEquals(0, updatedUser.getBalance().compareTo(new BigDecimal("9900.00")));
 
         List<Transaction> transactions = transactionRepository.findByUserId(testUser.getId());
@@ -103,7 +104,7 @@ public class CryptoServiceITest{
 
         cryptoService.sell(jwtToken, sellRequest);
 
-        User updatedUser = userRepository.findById(testUser.getId());
+        User updatedUser = userRepository.findById(testUser.getId()).orElseThrow(()-> new NotFoundException("User Not Found"));
 
         assertEquals(0, updatedUser.getBalance().compareTo(new BigDecimal("10050")));
 

@@ -1,5 +1,7 @@
 package com.crypto.server.ServiceUTest;
 
+import com.crypto.server.config.exceptions.InsufficientBalanceException;
+import com.crypto.server.config.exceptions.InvalidTradeException;
 import com.crypto.server.config.exceptions.NotFoundException;
 import com.crypto.server.model.PurchaseLot;
 import com.crypto.server.model.User;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -47,7 +50,7 @@ public class CryptoServiceUTest {
     public void setup() {
         token = "dummy.jwt.token";
         userId = 1;
-        when(jwtService.extractClaim(token, "_id")).thenReturn(userId);
+        when(jwtService.extractClaim(token, "_id", Integer.class)).thenReturn(userId);
     }
 
     @Test
@@ -57,7 +60,8 @@ public class CryptoServiceUTest {
 
         CryptoTradeRequest request = new CryptoTradeRequest(amount, cost, "BTC", "Bitcoin");
 
-        when(userRepository.findById(userId)).thenReturn(new User(userId, "user1", new BigDecimal("1500.00")));
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User(userId, "user1", new BigDecimal("1500.00"))));
         when(transactionRepository.insert(eq(userId), eq("BUY"), eq("BTC"), eq(amount), any(), any())).thenReturn(42);
 
         cryptoService.buy(token, request);
@@ -68,7 +72,7 @@ public class CryptoServiceUTest {
 
     @Test
     public void testBuy_UserNotFound() {
-        when(userRepository.findById(userId)).thenReturn(null);
+        when(userRepository.findById(userId)).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
             cryptoService.buy(token, new CryptoTradeRequest(new BigDecimal("1"), new BigDecimal("10"), "BTC", "Bitcoin"));
@@ -77,9 +81,10 @@ public class CryptoServiceUTest {
 
     @Test
     public void testBuy_InsufficientBalance() {
-        when(userRepository.findById(userId)).thenReturn(new User(userId, "u", new BigDecimal("5")));
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(new User(userId, "u", new BigDecimal("5"))));
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(InsufficientBalanceException.class, () -> {
             cryptoService.buy(token, new CryptoTradeRequest(new BigDecimal("1"), new BigDecimal("10"), "BTC", "Bitcoin"));
         });
     }
@@ -95,8 +100,6 @@ public class CryptoServiceUTest {
         fifoLots.add(new PurchaseLot(1, userId, "BTC", new BigDecimal("0.1"), new BigDecimal("0.05"), new BigDecimal("950.00"), 1, null));
 
         when(lotRepository.findOpenLotsFIFO(userId, "BTC")).thenReturn(fifoLots);
-        when(userRepository.findById(userId)).thenReturn(new User(userId, "user1", new BigDecimal("1500.00")));
-        when(transactionRepository.insert(eq(userId), eq("SELL"), eq("BTC"), eq(amount), any(), any())).thenReturn(42);
 
         cryptoService.sell(token, request);
 
@@ -106,11 +109,11 @@ public class CryptoServiceUTest {
     }
 
 
+
     @Test
     public void testSell_UserNotFound() {
-        when(userRepository.findById(userId)).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> {
+        assertThrows(InvalidTradeException.class, () -> {
             cryptoService.sell(token, new CryptoTradeRequest(new BigDecimal("1"), new BigDecimal("10"), "BTC", "Bitcoin"));
         });
     }
@@ -123,9 +126,8 @@ public class CryptoServiceUTest {
         CryptoTradeRequest request = new CryptoTradeRequest(amount, cost, "BTC", "Bitcoin");
 
         when(lotRepository.findOpenLotsFIFO(userId, "BTC")).thenReturn(new ArrayList<>());
-        when(userRepository.findById(userId)).thenReturn(new User(userId, "user1", new BigDecimal("1500.00")));
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(InvalidTradeException.class, () -> {
             cryptoService.sell(token, request);
         });
     }
@@ -152,18 +154,26 @@ public class CryptoServiceUTest {
         BigDecimal costBasis = sellAmount.multiply(pricePerUnit);
         BigDecimal revenue = sellAmount.multiply(sellPricePerUnit);
         BigDecimal expectedProfit = revenue.subtract(costBasis);
+        BigDecimal cost = sellAmount.multiply(sellPricePerUnit); // total sell value
 
-        when(jwtService.extractClaim(token, "_id")).thenReturn(userId);
+        when(jwtService.extractClaim(token, "_id", Integer.class)).thenReturn(userId);
         when(lotRepository.findOpenLotsFIFO(userId, "BTC")).thenReturn(List.of(lot));
-        when(userRepository.findById(userId)).thenReturn(new User(userId, "user1", new BigDecimal("1500.00")));
-        when(transactionRepository.insert(eq(userId), eq("SELL"), eq("BTC"), eq(sellAmount), any(), eq(expectedProfit)))
-                .thenReturn(42);
 
-        CryptoTradeRequest request = new CryptoTradeRequest(sellAmount, new BigDecimal("24.00"), "BTC", "Bitcoin");
+        CryptoTradeRequest request = new CryptoTradeRequest(sellAmount, cost, "BTC", "Bitcoin");
         cryptoService.sell(token, request);
 
-        verify(transactionRepository).insert(eq(userId), eq("SELL"), eq("BTC"), eq(sellAmount), any(), eq(expectedProfit));
+        verify(lotRepository).reduceLotAmount(eq(1), eq(sellAmount));
+        verify(userRepository).increaseBalance(userId, cost);
+        verify(transactionRepository).insert(
+                eq(userId),
+                eq("SELL"),
+                eq("BTC"),
+                eq(sellAmount),
+                any(BigDecimal.class),
+                eq(expectedProfit)
+        );
     }
+
 
 
 }

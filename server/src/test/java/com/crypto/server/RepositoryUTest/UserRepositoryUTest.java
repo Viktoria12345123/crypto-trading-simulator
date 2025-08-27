@@ -112,7 +112,7 @@ public class UserRepositoryUTest {
     when(resultSet.getString("username")).thenReturn("john_doe");
     when(resultSet.getBigDecimal("balance")).thenReturn(new BigDecimal("1234.56"));
 
-    User user = userRepository.findById(testUserId);
+    User user = userRepository.findById(testUserId).orElseThrow(() -> new NotFoundException("User not found"));
 
     assertNotNull(user);
     assertEquals(testUserId, user.getId());
@@ -133,7 +133,8 @@ public class UserRepositoryUTest {
     when(preparedStatement.executeQuery()).thenReturn(resultSet);
     when(resultSet.next()).thenReturn(false);
 
-    assertThrows(NotFoundException.class, () -> userRepository.findById(testUserId));
+    assertThrows(NotFoundException.class, () -> userRepository.findById(testUserId)
+            .orElseThrow(() -> new NotFoundException("User not found")));
   }
 
   @Test
