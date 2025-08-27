@@ -1,5 +1,6 @@
 package com.crypto.server.repository;
 
+import com.crypto.server.config.exceptions.DatabaseException;
 import com.crypto.server.model.Holding;
 import com.crypto.server.model.PurchaseLot;
 import org.springframework.stereotype.Repository;
@@ -47,7 +48,7 @@ public class LotRepository {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to insert purchase lot", e);
+            throw new DatabaseException("Failed to insert purchase lot", e);
         }
     }
 
@@ -88,7 +89,7 @@ public class LotRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch open lots", e);
+            throw new DatabaseException("Failed to fetch open lots", e);
         }
 
         return lots;
@@ -115,7 +116,7 @@ public class LotRepository {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to reduce lot amount", e);
+            throw new DatabaseException("Failed to reduce lot amount", e);
         }
     }
 
@@ -151,7 +152,7 @@ public class LotRepository {
 
             return holdings;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch holdings", e);
+            throw new DatabaseException("Failed to fetch holdings", e);
         }
 
 
@@ -172,7 +173,7 @@ public class LotRepository {
             stmt.setInt(1, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete lots for user", e);
+            throw new DatabaseException("Failed to delete lots for user", e);
         }
     }
 }

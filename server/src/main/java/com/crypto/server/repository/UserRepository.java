@@ -1,5 +1,6 @@
 package com.crypto.server.repository;
 
+import com.crypto.server.config.exceptions.DatabaseException;
 import com.crypto.server.config.exceptions.NotFoundException;
 import com.crypto.server.model.User;
 import com.crypto.server.web.dto.AuthResponse;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.Optional;
 
 @Repository
 public class UserRepository {
@@ -38,7 +40,7 @@ public class UserRepository {
             int affectedRows = ps.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new RuntimeException("Creating user failed, no rows affected.");
+                throw new DatabaseException("Creating user failed, no rows affected.");
             }
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -47,11 +49,11 @@ public class UserRepository {
                 String username = request.username();
                 return new AuthResponse(id, username);
             } else {
-                throw new RuntimeException("Creating user failed, no ID obtained.");
+                throw new DatabaseException("Creating user failed, no ID obtained.");
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create user", e);
+            throw new DatabaseException("Failed to create user", e);
         }
     }
 
@@ -80,7 +82,7 @@ public class UserRepository {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find user", e);
+            throw new DatabaseException("Failed to find user", e);
         }
     }
 
@@ -91,9 +93,8 @@ public class UserRepository {
      * @param id The user ID
      * @return The User object or NotFoundException if not found
      */
-    public User findById(int id) {
+    public Optional<User> findById(int id) {
         String sql = "SELECT id, username, balance FROM users WHERE id = ?";
-
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
@@ -104,14 +105,15 @@ public class UserRepository {
                 int userId = rs.getInt("id");
                 String username = rs.getString("username");
                 BigDecimal balance = rs.getBigDecimal("balance");
-                return new User(userId, username, balance != null ? balance : BigDecimal.ZERO);
+                return Optional.of(new User(userId, username, balance != null ? balance : BigDecimal.ZERO));
             } else {
-                throw new NotFoundException("User with id '" + id + "' not found");
+                return Optional.empty();
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find user by ID", e);
+            throw new DatabaseException("Failed to find user by ID", e);
         }
     }
+
 
     /**
      * Updates a user's balance.
@@ -129,7 +131,7 @@ public class UserRepository {
             ps.setInt(2, userId);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to update user balance", e);
+            throw new DatabaseException("Failed to update user balance", e);
         }
     }
 
@@ -149,7 +151,7 @@ public class UserRepository {
             stmt.setInt(2, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to increase user balance", e);
+            throw new DatabaseException("Failed to increase user balance", e);
         }
     }
 }
