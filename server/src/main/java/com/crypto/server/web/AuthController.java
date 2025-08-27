@@ -32,62 +32,31 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest,
-                                      BindingResult bindingResult,
-                                      HttpServletResponse response) {
-
+    public ResponseEntity<AuthResponse> register(@RequestBody @Valid RegisterRequest request,
+                                                 BindingResult bindingResult,
+                                                 HttpServletResponse response) {
 
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(bindingResult.getAllErrors().getFirst().getDefaultMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest()
+                    .body(null);
         }
 
-        AuthResponse user = userService.register(registerRequest);
-        createTokenAndSetCookie(user, response);
+        AuthResponse user = userService.register(request, response);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest,
-                                   BindingResult bindingResult,
-                                   HttpServletResponse response) {
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request,
+                                              BindingResult bindingResult,
+                                              HttpServletResponse response) {
 
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(bindingResult.getAllErrors().getFirst(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(null);
         }
 
-        AuthResponse user = userService.login(loginRequest);
-        createTokenAndSetCookie(user, response);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        AuthResponse auth = userService.login(request, response);
+        return ResponseEntity.ok(auth);
     }
 
-    @GetMapping("/session")
-    public ResponseEntity<?> getSession(@CookieValue(name = "jwt", required = false) String token) {
 
-        Object id = jwtService.extractClaim(token, "_id");
-        Object username = jwtService.extractClaim(token, "username");
-
-        if (id == null || username == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("id", id);
-        userData.put("username", username);
-
-        return ResponseEntity.ok(userData);
-    }
-
-    private void createTokenAndSetCookie(AuthResponse user, HttpServletResponse response) {
-        String token = jwtService.generateToken(user.id(), user.username());
-
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(7 * 24 * 60 * 60)
-                .sameSite("None")
-                .build();
-
-        response.setHeader("Set-Cookie", cookie.toString());
-    }
 }

@@ -24,12 +24,7 @@ public class UserController {
 
     @GetMapping("/balance")
     public ResponseEntity<?> getUserBalance(@CookieValue(name = "jwt", required = false) String token)  {
-
-        Object id =jwtService.extractClaim(token, "_id");
-        if (id == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
+        Integer id = jwtService.extractClaim(token, "_id", Integer.class);
         User user = userService.getUserById((int) id);
 
         return ResponseEntity.ok(Map.of("balance", user.getBalance()));
@@ -37,13 +32,8 @@ public class UserController {
 
     @PostMapping("/reset")
     public ResponseEntity<?> resetUser(@CookieValue(name = "jwt", required = false) String token) {
-        Object id = jwtService.extractClaim(token, "_id");
-
-        if (id == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        userService.resetUserAccount((int) id);
+        int id = jwtService.extractClaim(token, "_id", Integer.class);
+        userService.resetUserAccount(id);
 
         return ResponseEntity.ok(Map.of("message", "Account reset successful"));
     }
