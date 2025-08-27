@@ -10,6 +10,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class JwtService{
@@ -32,20 +33,23 @@ public class JwtService{
                 .compact();
     }
 
-    public Object extractClaim(String token, String claimKey) {
+    public <T> T extractClaim(String token, String claimKey, Class<T> type) {
         try {
-            Claims claims = Jwts
-                    .parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(getSignInKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
 
-            return claims.get(claimKey);
+            return Optional.ofNullable(claims.get(claimKey))
+                    .map(type::cast)
+                    .orElseThrow(() -> new UnauthorizedException("Missing claim: " + claimKey));
+
         } catch (JwtException e) {
-          throw new UnauthorizedException("Invalid JWT token");
+            throw new UnauthorizedException("Invalid JWT token");
         }
     }
+
 
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());

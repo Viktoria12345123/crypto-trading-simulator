@@ -1,5 +1,7 @@
 package com.crypto.server.service;
 
+import com.crypto.server.config.exceptions.InsufficientBalanceException;
+import com.crypto.server.config.exceptions.InvalidTradeException;
 import com.crypto.server.config.exceptions.NotFoundException;
 import com.crypto.server.model.*;
 import com.crypto.server.repository.LotRepository;
@@ -29,46 +31,35 @@ public class CryptoService {
     }
 
     @Transactional
-    public void buy(String token, CryptoTradeRequest request)  {
-        int id = (int) jwtService.extractClaim(token, "_id");
+    public void buy(String token, CryptoTradeRequest request) {
+        int id = jwtService.extractClaim(token, "_id", Integer.class);
 
-        User user = userRepository.findById(id);
-        if (user == null) throw new NotFoundException("User not found");
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         BigDecimal totalCost = request.cost();
         BigDecimal amount = request.amount();
-        BigDecimal profit = totalCost.negate();
         BigDecimal newBalance = user.getBalance().subtract(totalCost);
 
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Insufficient balance");
+            throw new InsufficientBalanceException("Insufficient balance to complete the purchase");
         }
+
         userRepository.updateBalance(id, newBalance);
 
+        BigDecimal pricePerUnit = totalCost.divide(amount, 2, RoundingMode.HALF_UP);
+        BigDecimal profit = totalCost.negate();
+
         int transactionId = transactionRepository.insert(
-                user.getId(),
-                TransactionType.BUY.name(),
-                request.symbol(),
-                amount,
-                totalCost.divide(amount, 2, RoundingMode.HALF_UP),
-                profit
+                id, TransactionType.BUY.name(), request.symbol(), amount, pricePerUnit, profit
         );
 
-        lotRepository.insertLot(
-                user.getId(),
-                request.symbol(),
-                amount,
-                amount,
-                totalCost.divide(amount, 2, RoundingMode.HALF_UP),
-                transactionId
-        );
+        lotRepository.insertLot(id, request.symbol(), amount, amount, pricePerUnit, transactionId);
     }
 
     @Transactional
     public void sell(String token, CryptoTradeRequest request) {
-        int id = (int) jwtService.extractClaim(token, "_id");
-
-        if(userRepository.findById(id) == null) throw new NotFoundException("User not found");
+        int id = jwtService.extractClaim(token, "_id", Integer.class);
 
         BigDecimal amountToSell = request.amount();
         BigDecimal sellPricePerUnit = request.cost().divide(request.amount(), 2, RoundingMode.HALF_UP);
@@ -77,7 +68,7 @@ public class CryptoService {
         List<PurchaseLot> fifoLots = lotRepository.findOpenLotsFIFO(id, request.symbol());
 
         if (fifoLots.isEmpty()) {
-            throw new IllegalArgumentException("No open lots available for the specified symbol");
+            throw new InvalidTradeException("No open lots available for the specified symbol");
         }
 
         for (PurchaseLot lot : fifoLots) {
@@ -92,13 +83,12 @@ public class CryptoService {
 
         userRepository.increaseBalance(id, request.cost());
 
-        transactionRepository.insert(
-               id, TransactionType.SELL.name(), request.symbol(), request.amount(), sellPricePerUnit, profit
-        );
+        transactionRepository.insert(id, TransactionType.SELL.name(), request.symbol(), request.amount(), sellPricePerUnit, profit);
     }
 
+
     public List<Transaction> getTransactions(String token) {
-        int id = (int) jwtService.extractClaim(token, "_id");
+        int id = jwtService.extractClaim(token, "_id", Integer.class);
         return transactionRepository.findByUserId(id);
     }
 
@@ -108,9 +98,8 @@ public class CryptoService {
         return revenue.subtract(costBasis);
     }
 
-    public List<Holding> holdings(String jwt) {
-
-        int userId = (int) jwtService.extractClaim(jwt, "_id");
-        return lotRepository.findHoldingsByUserId(userId);
+    public List<Holding> holdings(String token) {
+        int id = jwtService.extractClaim(token, "_id", Integer.class);
+        return lotRepository.findHoldingsByUserId(id);
     }
 }

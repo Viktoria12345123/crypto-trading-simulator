@@ -1,5 +1,6 @@
 package com.crypto.server.repository;
 
+import com.crypto.server.config.exceptions.DatabaseException;
 import com.crypto.server.model.Transaction;
 import org.springframework.stereotype.Repository;
 
@@ -51,11 +52,11 @@ public class TransactionRepository {
                 if (keys.next()) {
                     return keys.getInt(1);
                 } else {
-                    throw new RuntimeException("Transaction insert failed — no ID returned.");
+                    throw new DatabaseException("Transaction insert failed — no ID returned.");
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to insert transaction", e);
+            throw new DatabaseException("Failed to insert transaction", e);
         }
     }
 
@@ -73,7 +74,7 @@ public class TransactionRepository {
             stmt.setInt(1, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete transactions for user: " + userId, e);
+            throw new DatabaseException("Failed to delete transactions for user: " + userId, e);
         }
     }
 
@@ -108,7 +109,7 @@ public class TransactionRepository {
                 return transactions;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch transactions for user: " + userId, e);
+            throw new DatabaseException("Failed to fetch transactions for user: " + userId, e);
         }
     }
 }
